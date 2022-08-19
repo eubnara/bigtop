@@ -329,22 +329,26 @@ bigtop {
     'ambari' {
       name    = 'ambari'
       relNotes = 'Apache Ambari'
-      version { base = '2.7.5'; pkg = '2.7.5.0'; release = 1 }
+      version { base = '2.7.6'; pkg = '2.7.6.0'; release = 1 }
       tarball { destination = "apache-$name-${version.base}-src.tar.gz"
                 source      = destination }
-      url     { download_path = "/$name/$name-${version.base}/"
-                site = "${apache.APACHE_MIRROR}/${download_path}"
-                archive = "${apache.APACHE_ARCHIVE}/${download_path}" }
+      git {
+         repo  = "https://github.com/eubnara/ambari.git"
+         ref   = "eub-release-2.7.6"
+         dir   = "apache-ambari-${version.base}-src"
+      }
     }
     'bigtop-ambari-mpack' {
       name    = 'bigtop-ambari-mpack'
       relNotes = 'Bigtop Mpack'
-      version { base = '2.7.5'; pkg = '2.7.5.0'; release = 1 }
+      version { base = '2.7.6'; pkg = '2.7.6.0'; release = 0 }
       tarball { destination = "apache-ambari-${version.base}-src.tar.gz"
                 source      = destination }
-      url     { download_path = "/ambari/ambari-${version.base}/"
-                site = "${apache.APACHE_MIRROR}/${download_path}"
-                archive = "${apache.APACHE_ARCHIVE}/${download_path}" }
+      git {
+         repo  = "https://github.com/eubnara/ambari.git"
+         ref   = "eub-2.7.6"
+         dir   = "apache-ambari-${version.base}-src"
+      }
     }
     'livy' {
       name    = 'livy'
