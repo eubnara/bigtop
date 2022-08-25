@@ -93,9 +93,6 @@ Ambari Server
 # See the License for the specific language governing permissions and
 # limitations under the License
 
-STACKS_FOLDER="/var/lib/ambari-server/resources/stacks"
-STACKS_FOLDER_OLD=/var/lib/ambari-server/resources/stacks_$(date '+%d_%m_%y_%H_%M').old
-
 COMMON_SERVICES_FOLDER="/var/lib/ambari-server/resources/common-services"
 COMMON_SERVICES_FOLDER_OLD=/var/lib/ambari-server/resources/common-services_$(date '+%d_%m_%y_%H_%M').old
 
@@ -105,11 +102,6 @@ AMBARI_VIEWS_BACKUP_FOLDER="$AMBARI_VIEWS_FOLDER/backups"
 if [ -d "/etc/ambari-server/conf.save" ]
 then
     mv /etc/ambari-server/conf.save /etc/ambari-server/conf_$(date '+%d_%m_%y_%H_%M').save
-fi
-
-if [ -d "$STACKS_FOLDER" ]
-then
-    mv -f "$STACKS_FOLDER" "$STACKS_FOLDER_OLD"
 fi
 
 if [ -d "$COMMON_SERVICES_FOLDER_OLD" ]
@@ -232,7 +224,7 @@ exit 0
 
 PYPATH=`find /usr/lib -maxdepth 1 -name 'python*' | sort`
 PYLIB_DIR=`echo ${PYPATH} | awk '{print $1}'`
-RESOURCE_MANAGEMENT_DIR= "${PYLIB_DIR}/site-packages/resource_management"
+RESOURCE_MANAGEMENT_DIR="${PYLIB_DIR}/site-packages/resource_management"
 RESOURCE_MANAGEMENT_DIR_SERVER="/usr/lib/ambari-server/lib/resource_management"
 JINJA_DIR="${PYLIB_DIR}/site-packages/ambari_jinja2"
 JINJA_SERVER_DIR="/usr/lib/ambari-server/lib/ambari_jinja2"
@@ -287,9 +279,6 @@ Ambari Agent
 # See the License for the specific language governing permissions and
 # limitations under the License
 
-STACKS_FOLDER="/var/lib/ambari-agent/cache/stacks"
-STACKS_FOLDER_OLD=/var/lib/ambari-agent/cache/stacks_$(date '+%d_%m_%y_%H_%M').old
-
 COMMON_SERVICES_FOLDER="/var/lib/ambari-agent/cache/common-services"
 COMMON_SERVICES_FOLDER_OLD=/var/lib/ambari-agent/cache/common-services_$(date '+%d_%m_%y_%H_%M').old
 
@@ -306,11 +295,6 @@ ORIG_SUDOERS=/etc/sudoers.d/ambari-agent
 
 [ -f $ORIG ] && mv -f $ORIG $BAK
 [ -f $ORIG_SUDOERS ] && echo "Moving $ORIG_SUDOERS to $BAK_SUDOERS. Please restore the file if you were using it for ambari-agent non-root functionality" && mv -f $ORIG_SUDOERS $BAK_SUDOERS
-
-if [ -d "$STACKS_FOLDER" ]
-then
-    mv -f "$STACKS_FOLDER" "$STACKS_FOLDER_OLD"
-fi
 
 if [ -d "$COMMON_SERVICES_FOLDER_OLD" ]
 then
@@ -451,6 +435,9 @@ fi
 exit 0
 
 %files server
+%config(noreplace) /etc/ambari-server/conf/*
+%config(noreplace) /var/lib/ambari-server/resources/stacks
+%config(noreplace) /var/lib/ambari-server/resources/stack-hooks
 %attr(644,root,root) /etc/init/ambari-server.conf
 %defattr(644,root,root,755)
 /usr/lib/ambari-server
@@ -489,6 +476,7 @@ exit 0
 %attr(755,root,root) /usr/lib/ambari-agent/lib/ambari_simplejson
 %attr(755,root,root) /usr/lib/ambari-agent/lib/examples
 /etc/ambari-agent/conf
+%config(noreplace) /etc/ambari-agent/conf/*
 %attr(755,root,root) /etc/ambari-agent/conf/ambari-agent.ini
 %attr(755,root,root) /etc/ambari-agent/conf/logging.conf.sample
 %attr(755,root,root) /var/lib/ambari-agent/bin/ambari-agent 

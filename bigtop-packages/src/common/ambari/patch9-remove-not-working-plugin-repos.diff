@@ -1,8 +1,8 @@
 diff --git a/ambari-server/pom.xml b/ambari-server/pom.xml
-index 8ff399051c..b268337ac8 100644
+index a403dad773..6a8852d09a 100644
 --- a/ambari-server/pom.xml
 +++ b/ambari-server/pom.xml
-@@ -1739,12 +1739,4 @@
+@@ -1857,12 +1857,4 @@
      </dependency>
    </dependencies>
 
@@ -16,10 +16,10 @@ index 8ff399051c..b268337ac8 100644
 -
  </project>
 diff --git a/ambari-serviceadvisor/pom.xml b/ambari-serviceadvisor/pom.xml
-index 8719cd85de..58d5dc749c 100644
+index e8fc4f8287..dbfbafadd6 100644
 --- a/ambari-serviceadvisor/pom.xml
 +++ b/ambari-serviceadvisor/pom.xml
-@@ -47,14 +47,6 @@
+@@ -57,14 +57,6 @@
      </dependency>
    </dependencies>
 
@@ -35,7 +35,7 @@ index 8719cd85de..58d5dc749c 100644
    <!-- Run with mvn clean package .
    Execute as, java -jar serviceadvisor-$VERSION.jar
 diff --git a/pom.xml b/pom.xml
-index 4393b0502d..d9be586dd1 100644
+index 2a603ada46..50c1ed2a0f 100644
 --- a/pom.xml
 +++ b/pom.xml
 @@ -64,17 +64,6 @@
