@@ -107,10 +107,47 @@ fi
 
 . `dirname $0`/bigtop.bom
 
+REQUIRE_NATIVE="-Drequire.isal=true"
+
+if which rpm && [[ ! -f /usr/lib/libisal.so ]] && [[ ! -f /usr/lib64/libisal.so ]];then
+
+TEMP_NASM=`mktemp -d`
+TEMP_ISAL=`mktemp -d`
+
+yum -y install gcc make autoconf automake libtool git curl which \
+&& git clone https://github.com/netwide-assembler/nasm.git $TEMP_NASM \
+&& pushd $TEMP_NASM \
+        && yum -y install epel-release \
+        && yum -y install asciidoc xmlto fontconfig ghostscript adobe-source-code-pro-fonts adobe-source-sans-pro-fonts perl-Font-TTF perl-Sort-Versions \
+        && git checkout tags/nasm-2.15.05 \
+        && sh autogen.sh \
+        && sh configure \
+        && make everything \
+        && make install \
+&& popd \
+&& git clone https://github.com/intel/isa-l.git $TEMP_ISAL \
+&& pushd $TEMP_ISAL \
+        && git checkout tags/v2.30.0 && ./autogen.sh \
+        && ./configure --prefix=/usr --libdir=/usr/lib64 \
+        && make && make install \
+&& popd
+
+if [[ "$?" != "0" ]];then
+    exit 1
+fi
+fi
+
+
+
 if [ -z "$BUNDLE_SNAPPY" ] ; then
   [ -f /usr/lib/libsnappy.so ] && BUNDLE_SNAPPY="-Dsnappy.prefix=x -Dbundle.snappy=true -Dsnappy.lib=/usr/lib"
   [ -f /usr/lib64/libsnappy.so ] && BUNDLE_SNAPPY="-Dsnappy.prefix=x -Dbundle.snappy=true -Dsnappy.lib=/usr/lib64"
   [ -f /usr/lib/${HOSTTYPE}-linux-gnu/libsnappy.so ] && BUNDLE_SNAPPY="-Dsnappy.prefix=x -Dbundle.snappy=true -Dsnappy.lib=/usr/lib/${HOSTTYPE}-linux-gnu"
+fi
+
+if [ -z "$BUNDLE_ISAL" ] ; then
+  [ -f /usr/lib/libisal.so ] && BUNDLE_ISAL="-Disal.prefix=x -Dbundle.isal=true -Disal.lib=/usr/lib"
+  [ -f /usr/lib64/libisal.so ] && BUNDLE_ISAL="-Disal.prefix=x -Dbundle.isal=true -Disal.lib=/usr/lib64"
 fi
 
 mkdir build
@@ -125,7 +162,7 @@ MAVEN_OPTS+="-DskipTests -DskipITs "
 . $(dirname ${0})/maven_deploy.sh
 
 # Build artifacts
-mvn $BUNDLE_SNAPPY -Pdist -Pnative -Psrc -Pyarn-ui -Dtar ${MAVEN_OPTS} install ${EXTRA_GOALS} "$@"
+mvn $REQUIRE_NATIVE $BUNDLE_SNAPPY $BUNDLE_ISAL -Pdist -Pnative -Psrc -Pyarn-ui -Dtar ${MAVEN_OPTS} install ${EXTRA_GOALS} "$@"
 mvn site site:stage ${MAVEN_OPTS} $@
 
 (cd build ; tar --strip-components=1 -xzvf  ../hadoop-dist/target/hadoop-${HADOOP_VERSION}.tar.gz)
