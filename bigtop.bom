@@ -319,7 +319,7 @@ bigtop {
     'ambari' {
       name    = 'ambari'
       relNotes = 'Apache Ambari'
-      version { base = '2.7.6'; pkg = '2.7.6.0'; release = 6 }
+      version { base = '2.7.6'; pkg = '2.7.6.0'; release = 8 }
       tarball { destination = "apache-$name-${version.base}-src.tar.gz"
                 source      = destination }
       git {
