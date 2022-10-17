@@ -173,18 +173,6 @@
     <on-ambari-upgrade add="true"/>
   </property>
   <property>
-    <name>proxyuser_group</name>
-    <display-name>Proxy User Group</display-name>
-    <value>users</value>
-    <property-type>GROUP</property-type>
-    <description>Proxy user group.</description>
-    <value-attributes>
-      <type>user</type>
-      <overridable>false</overridable>
-    </value-attributes>
-    <on-ambari-upgrade add="true"/>
-  </property>
-  <property>
     <name>hdfs_user</name>
     <display-name>HDFS User</display-name>
     <value>hdfs</value>
@@ -384,7 +372,8 @@ fi
 export HADOOP_LIBEXEC_DIR={{hadoop_libexec_dir}}
 
 #Mostly required for hadoop 2.0
-export JAVA_LIBRARY_PATH=${JAVA_LIBRARY_PATH}:{{hadoop_lib_home}}/native/Linux-{{architecture}}-64
+#export JAVA_LIBRARY_PATH=${JAVA_LIBRARY_PATH}:{{hadoop_lib_home}}/native/Linux-{{architecture}}-64
+export JAVA_LIBRARY_PATH=${JAVA_LIBRARY_PATH}:{{hadoop_lib_home}}/native
 
 {% if is_datanode_max_locked_memory_set %}
 # Fix temporary bug, when ulimit from conf files is not picked up, without full relogin. 
