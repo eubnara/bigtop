@@ -12,12 +12,20 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-export HADOOP_HOME=/usr/lib/hadoop
 
-export HADOOP_LIBEXEC_DIR=/usr/lib/hadoop/libexec
-export HADOOP_CONF_DIR=/etc/hadoop/conf
+class bigtop_toolchain::jdk11 {
+  case $::operatingsystem {
+    /(Debian|Ubuntu)/: {
+      include apt
 
-export HADOOP_COMMON_HOME=/usr/lib/hadoop
-export HADOOP_HDFS_HOME=/usr/lib/hadoop-hdfs
-export HADOOP_MAPRED_HOME=/usr/lib/hadoop-mapreduce
-export HADOOP_YARN_HOME=/usr/lib/hadoop-yarn
+      package { 'openjdk-11-jdk' :
+        ensure  => present,
+      }
+    }
+    /(CentOS|Fedora|RedHat)/: {
+      package { 'java-11-openjdk-devel' :
+        ensure => present
+      }
+    }
+  }
+}
