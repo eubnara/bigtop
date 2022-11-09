@@ -1,0 +1,6 @@
+#!/bin/bash
+
+export IMPALA_CONF_DIR=${IMPALA_CONF_DIR:-/etc/impala/conf}
+source ${IMPALA_CONF_DIR}/impala-env.sh
+
+exec ${IMPALA_BIN}/statestored "$@"

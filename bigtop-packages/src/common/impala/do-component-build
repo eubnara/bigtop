@@ -1,0 +1,60 @@
+#!/bin/sh
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -ex
+
+. $(dirname $0)/bigtop.bom
+sudo yum install -y redhat-lsb python-setuptools vim-common # vim-common for xxd
+
+# sudo yum install -y cmake curl cyrus-sasl cyrus-sasl-devel cyrus-sasl-gssapi cyrus-sasl-plain fuse-devel gawk git java-1.8.0-openjdk-devel java-1.8.0-openjdk-src krb5-devel krb5-server krb5-workstation langpacks-en libevent-devel libffi-devel lsof make nscd openssh-server openssl-devel postgresql postgresql-server psmisc python-devel python-setuptools redhat-lsb rpm-build vim-common wget zlib-devel
+# sudo yum install -y epel-release
+# sudo yum install -y ccache
+export IMPALA_HOME=$(pwd)
+export IMPALA_BUILD_THREADS=$(nproc)
+
+cat >./bin/impala-config-local.sh <<EOF
+export IMPALA_HUDI_VERSION=0.12.0 # which is dependent on "ORC 1.6.0"
+export IMPALA_KITE_VERSION=1.1.0
+# export IMPALA_ORC_JAVA_VERSION=1.6.14
+export IMPALA_ORC_JAVA_VERSION=1.6.0
+export IMPALA_COS_VERSION=3.1.0-8.1.6
+# export USE_SYSTEM_GCC=1
+# export SKIP_TOOLCHAIN_BOOTSTRAP=true
+export DOWNLOAD_CDH_COMPONENTS=false
+export DOWNLOAD_APACHE_COMPONENTS=true
+export USE_APACHE=true
+
+EOF
+
+# Cache toolchain directory to save time to download it. If you find some errors, remove it and rebuilt it.
+TOOLCHAIN_CACHE_DIR=~/.m2/impala_toolchain_cache
+mkdir -p $TOOLCHAIN_CACHE_DIR
+if [[ ! -L ./toolchain ]]; then
+    rm -rf ./toolchain
+fi
+ln -snf $TOOLCHAIN_CACHE_DIR ./toolchain
+# Don't remove "-noclean" parameter. There are some cleaning logics in ./bin/clean.sh on the impala source code side. It removes "be/CMakeLists.txt" which is necessary for building impala because "git clean -Xdfq" is executed in "./bin/clean.sh" but bigtop doesn't preserve ".git" directory.
+./buildall.sh -skiptests -noclean -notests -release
+
+# dump symbols in Breakpad's format
+mkdir -p ../../../tarball
+SYM_DIR=$(mktemp -d)
+source ./bin/impala-config.sh
+./bin/impala-python ./bin/dump_breakpad_symbols.py -b be/build/latest -d ${SYM_DIR}/syms
+# TODO: add release number?
+tar -C ${SYM_DIR} -cvzf impala-${IMPALA_VERSION}-breakpad-syms.tar.gz syms
+rm -rf ${SYM_DIR}
+cp ./impala-${IMPALA_VERSION}-breakpad-syms.tar.gz ../../../tarball

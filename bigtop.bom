@@ -361,5 +361,17 @@ bigtop {
       url     { site = "https://github.com/apache/ranger/archive/refs/tags"
                 archive = site }
     }
+    'impala' {
+      name    = 'impala'
+      relNotes = 'Apache Impala'
+      version { base = '4.1.1'; pkg = base; release = 1 }
+      tarball { destination = "apache-${name}-${version.base}.tar.gz"
+                source      = destination }
+      git {
+         repo  = "https://github.com/eubnara/impala.git"
+         ref   = "eub-4.1.1"
+         dir   = "apache-${name}-${version.base}"
+      }
+    }
   }
 }
