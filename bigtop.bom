@@ -361,5 +361,17 @@ bigtop {
       url     { site = "https://github.com/apache/ranger/archive/refs/tags"
                 archive = site }
     }
+    'kudu' {
+      name    = 'kudu'
+      relNotes = 'Apache Kudu'
+      version { base = '1.16.0'; pkg = base; release = 1 }
+      tarball { destination = "apache-$name-${version.base}.tar.gz"
+                source      = destination }
+       git {
+         repo  = "https://github.com/apache/kudu.git"
+         ref   = "1.16.0"
+         dir   = "apache-${name}-${version.base}"
+       }
+    }
   }
 }

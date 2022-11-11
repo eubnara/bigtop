@@ -1,0 +1,76 @@
+#!/bin/sh
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+set -ex
+
+. $(dirname $0)/bigtop.bom
+
+# https://kudu.apache.org/docs/installation.html#build_from_source
+# https://github.com/vitaliyf/kudu-rpm-packages/blob/master/SOURCES/do-component-build
+sudo yum install -y autoconf automake cyrus-sasl-devel cyrus-sasl-gssapi \
+    cyrus-sasl-plain flex gcc gcc-c++ gdb git java-1.8.0-openjdk-devel \
+    krb5-server krb5-workstation libtool make openssl-devel patch \
+    pkgconfig redhat-lsb-core rsync unzip vim-common which
+sudo yum install -y centos-release-scl-rh
+sudo yum install -y devtoolset-8
+sudo yum install -y memkind
+
+# caching
+for dir in installed src; do
+    target="thirdparty/$dir"
+    mkdir -p ~/.m2/kudu/$target
+    if [[ ! -L "./$target" ]]; then
+        rm -rf "./$target"
+    fi
+    ln -snf ~/.m2/kudu/${target} ./${target}
+done
+
+# We're building.
+
+# ./thirdparty/build-if-necessary.sh does not work outside of a git
+# repo, so we always rebuild thirdparty. It's unfortunate, but the only
+# side effect is a slower build.
+#
+ENABLE_DEVTOOLSET="$(pwd)/build-support/enable_devtoolset.sh"
+${ENABLE_DEVTOOLSET} ./thirdparty/download-thirdparty.sh
+${ENABLE_DEVTOOLSET} ./thirdparty/build-thirdparty.sh
+
+# Force cmake to omit the call to build-if-necessary.sh.
+export NO_REBUILD_THIRDPARTY=1
+
+CMAKE="$(pwd)/thirdparty/installed/common/bin/cmake"
+
+# Always static link.
+CMAKE="${CMAKE} -DKUDU_LINK=static"
+
+# Skip building of unit tests to save time.
+CMAKE="${CMAKE} -DNO_TESTS=1"
+
+# Set parallelism level based on the number of CPUs.
+MAKE="make -j$(nproc)"
+for type in release fastdebug; do
+    mkdir -p build/${type}
+    pushd build/${type}
+    rm -rf CMakeCache.txt CMakeFiles/
+    ${ENABLE_DEVTOOLSET} ${CMAKE} -DCMAKE_BUILD_TYPE=${type} ../..
+    ${MAKE}
+    ${MAKE} install DESTDIR=$(pwd)/client
+    popd
+done
+
+pushd java
+./gradlew assemble
+popd
