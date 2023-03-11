@@ -15,8 +15,11 @@
 # limitations under the License.
 
 set -ex
-. `dirname $0`/bigtop.bom
+. $(dirname $0)/bigtop.bom
 
-cp -r `dirname $0`/bgtp-ambari-mpack contrib/management-packs/
+cp -r ambari-server/src/main/resources/stacks/* $(dirname $0)/bgtp-ambari-mpack/src/main/resources/stacks/
+
+cp -r $(dirname $0)/bgtp-ambari-mpack contrib/management-packs/
 cd contrib/management-packs/bgtp-ambari-mpack
+mvn versions:set -DnewVersion=${BIGTOP_AMBARI_MPACK_VERSION_WITH_RELEASE}
 mvn clean package -DskipTests -Drat.skip
