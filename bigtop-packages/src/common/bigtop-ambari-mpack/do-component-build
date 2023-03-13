@@ -17,7 +17,10 @@
 set -ex
 . $(dirname $0)/bigtop.bom
 
-cp -r ambari-server/src/main/resources/stacks/* $(dirname $0)/bgtp-ambari-mpack/src/main/resources/stacks/
+for dir in stacks/BIGTOP common-services; do
+    mkdir -p $(dirname $0)/bgtp-ambari-mpack/src/main/resources/$dir/
+    cp -r ambari-server/src/main/resources/$dir/* $(dirname $0)/bgtp-ambari-mpack/src/main/resources/$dir/
+done
 
 cp -r $(dirname $0)/bgtp-ambari-mpack contrib/management-packs/
 cd contrib/management-packs/bgtp-ambari-mpack

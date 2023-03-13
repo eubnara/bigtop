@@ -28,6 +28,10 @@
       <directory>src/main/resources/stacks</directory>
       <outputDirectory>stacks</outputDirectory>
     </fileSet>
+    <fileSet>
+      <directory>src/main/resources/common-services</directory>
+      <outputDirectory>common-services</outputDirectory>
+    </fileSet>
   </fileSets>
   <files>
     <file>
