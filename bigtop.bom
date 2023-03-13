@@ -352,13 +352,13 @@ bigtop {
     'bigtop-ambari-mpack' {
       name    = 'bigtop-ambari-mpack'
       relNotes = 'Bigtop Mpack'
-      version { base = '2.7.6'; pkg = '2.7.6.0'; release = 0 }
-      tarball { destination = "apache-ambari-${version.base}-src.tar.gz"
+      version { base = '1.0.0'; pkg = '1.0.0.0'; release = 1 }
+      tarball { destination = "apache-ambari-src.tar.gz"
                 source      = destination }
       git {
-         repo  = "https://github.com/eubnara/ambari.git"
-         ref   = "eub-2.7.6"
-         dir   = "apache-ambari-${version.base}-src"
+         repo  = "https://github.com/apache/ambari.git"
+         ref   = "trunk"
+         dir   = "apache-ambari-src"
       }
     }
     'livy' {
