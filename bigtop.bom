@@ -340,7 +340,7 @@ bigtop {
     'ambari' {
       name    = 'ambari'
       relNotes = 'Apache Ambari'
-      version { base = '2.7.6'; pkg = '2.7.6.0'; release = 9 }
+      version { base = '2.7.6'; pkg = '2.7.6.0'; release = 10 }
       tarball { destination = "apache-$name-${version.base}-src.tar.gz"
                 source      = destination }
       git {
@@ -352,7 +352,7 @@ bigtop {
     'bigtop-ambari-mpack' {
       name    = 'bigtop-ambari-mpack'
       relNotes = 'Bigtop Mpack'
-      version { base = '1.0.0'; pkg = '1.0.0.0'; release = 1 }
+      version { base = '1.0.0'; pkg = '1.0.0.0'; release = 2 }
       tarball { destination = "apache-ambari-src.tar.gz"
                 source      = destination }
       git {
