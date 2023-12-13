@@ -23,7 +23,7 @@ for dir in stacks/BIGTOP common-services; do
 done
 
 # FIXME: install-mpack fails because only directories should exists below common-services dir.
-rm $(dirname $0)/bgtp-ambari-mpack/src/main/resources/common-services/README.txt
+rm -f $(dirname $0)/bgtp-ambari-mpack/src/main/resources/common-services/README.txt
 
 cp -r $(dirname $0)/bgtp-ambari-mpack contrib/management-packs/
 cd contrib/management-packs/bgtp-ambari-mpack
