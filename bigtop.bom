@@ -352,7 +352,7 @@ bigtop {
     'bigtop-ambari-mpack' {
       name    = 'bigtop-ambari-mpack'
       relNotes = 'Bigtop Mpack'
-      version { base = '1.0.0'; pkg = '1.0.0.0'; release = 2 }
+      version { base = '1.0.0'; pkg = '1.0.0.0'; release = 3 }
       tarball { destination = "apache-ambari-src.tar.gz"
                 source      = destination }
       git {
