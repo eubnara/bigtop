@@ -357,7 +357,7 @@ bigtop {
                 source      = destination }
       git {
          repo  = "https://github.com/apache/ambari.git"
-         ref   = "trunk"
+         ref   = "branch-2.8"
          dir   = "apache-ambari-src"
       }
     }
